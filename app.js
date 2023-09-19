@@ -2,6 +2,12 @@ const http = require("http");
 
 const express = require("express");
 
+//importing admin router
+const adminRoutes = require('./routes/Admin')
+
+//importing shop router
+const shopRoutes = require('./routes/Shop')
+
 //import body parser after (npm install --save body-parser)
 const bodyParser = require("body-parser");
 
@@ -10,20 +16,18 @@ const app = express();
 //body-parser is used before any routing middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use("/addProducts", (req, res, next) => {
-  res.send(
-    '<form action="/products" method="POST" ><input type="text" name="title"/><input type="text" name="disc"/><button type="submit">Add Products</button></form>'
-  );
-});
 
-app.post("/products", (req, res, next) => {
-  console.log(req.body);
-  res.redirect("/");
-});
+//using admin router here and sequence that they the router us used matters
+app.use('/admin',adminRoutes);
 
-app.use("/", (req, res, next) => {
-  res.send("<h1> hello to node js </h1>");
-});
+
+//using shop router here
+app.use(shopRoutes);
+
+// adding a 404 page not found for random addresses which are not in the routes
+app.use((req,res,next)=>{
+    res.status(404).send('<h1>404 page not found</h1>')
+})
 
 const servers = http.createServer(app);
 
